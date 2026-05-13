@@ -1,0 +1,52 @@
+Network_Size: 
+  num_satellites: 98 
+  t: 60                   # seconds, amount of time in one time step 
+  Time_Steps: 100         # number of time steps to simulate
+
+  walker_blueprint:
+    altitude_km: 1000.0       
+    inclination_deg: 86.4     
+    num_planes: 7             
+    sats_per_plane: 14        
+    f_inter_plane_phase: 1
+
+ISLL_Model_Parameters: 
+  P_t: 10e-3                # emitted luminous power, W
+  G_t: 106.3                # emitted antenna gain, dB
+  G_r: 118.9                # received antenna gain, dB
+  N_t: 0.5                  # transmitting antenna efficiency 
+  N_r: 0.4                  # receiving antenna efficiency
+  O_t: 0.01                 # pointing error deviation angle 
+  lambda: 1064e-9           # laser wavelength, meters
+  R: 0.6003                 # responsivity, A/W 
+  noise_variance: 4.3e-12   # sigma_N^2: Noise variance 
+  a: 1e-6                   # SNR threshold  
+
+
+Pointing_Error_Parameters: 
+  mu_x: 0.0                  # Azimuth pointing error angle mean
+  mu_y: 0.0                  # Pitch pointing error angle mean
+  sigma_x: 0.75              # Azimuth pointing error angle standard deviation  
+  sigma_y: 0.75              # Pitch pointing error angle standard deviation
+  
+
+Operational_Constraints: 
+  earth_radius_km: 6371.0     
+  atmosphere_margin_km: 100.0
+  
+  # Communication constraints between satellite and gateway station
+  alpha_s_max: 20             # gateway station and satellite’s maximum offset capability, degree 
+  # Communication constraints between satellite and user terminals
+  alpha_0_max: 20             # user terminal and satellite's maximum offset capability, degree
+  # Satellite’s microwave communication capability constraints
+  p_up_max: 1000              # data upload speed, Mbps
+  p_down_max: 1000            # data download speed, Mbps
+  # Satellite laser communication capability constraints.
+  o_i_max: 4                  # max out degree
+  l_i_max: 4                  # max in degree   
+  # ISLL communication range restriction.
+  d_max: 5000                 # maximum distance for ISLL communication, km
+
+
+
+

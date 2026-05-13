@@ -1,0 +1,21 @@
+GA-AS_Params:
+  strategy_name: "GA-AS"          # Strategy name
+  NP: 700                         # Size of the population used across core test suites
+  eta_m: 0.05                     # Mutation probability
+  eta_g: 0.5                      # General evolutionary selection/retention probability  
+  eta_c: 0.5                      # offspring cross-pollination probability
+  max_iterations: 200             # Maximum number of iterations (generations) to run the algorithm
+
+  multi_objective_weights:
+    w1: 0.8           # Weight coefficient for maximizing executed task priorities 
+    w2: 0.1           # Weight coefficient for minimizing link transition updates 
+    w3: 0.1           # Weight coefficient for minimizing physical link distance overheads 
+
+  penalty_strategy: 
+    M: 10000.0       # Large constant for penalty calculation to ensure that infeasible solutions are penalized heavily
+
+  A_star_Parameters:
+    heuristic_actual_cost_weight: 1.0      # Weight factor applied to h1(v_si): actual accumulated path cost
+    heuristic_estimated_cost_weight: 1.0   # Weight factor applied to h2(v_si): d^c_{si, q} estimated terminal distance 
+    roullete_smoothing_epsilon: 1e-6       # Small constant to prevent division by zero in roulette wheel selection
+
