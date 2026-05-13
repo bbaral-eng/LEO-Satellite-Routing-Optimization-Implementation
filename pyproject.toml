@@ -1,0 +1,12 @@
+[build-system]
+requires = ["scikit-build-core>=0.5", "pybind11>=2.6"]
+build-backend = "scikit_build_core.build"
+[project]
+name = "leo-routing-optimizer"
+version = "0.1.0"
+dependencies = [
+    "numpy",
+    "networkx",
+    "matplotlib",
+    "pyyaml"
+]
