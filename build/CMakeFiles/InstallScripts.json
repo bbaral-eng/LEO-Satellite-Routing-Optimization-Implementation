@@ -1,7 +1,0 @@
-{
-	"InstallScripts" : 
-	[
-		"/home/leoconstproject/leo-routing-optimizer/build/cmake_install.cmake"
-	],
-	"Parallel" : false
-}

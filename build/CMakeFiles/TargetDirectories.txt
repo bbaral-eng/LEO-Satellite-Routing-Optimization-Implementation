@@ -1,3 +1,0 @@
-/home/leoconstproject/leo-routing-optimizer/build/CMakeFiles/core_engine.dir
-/home/leoconstproject/leo-routing-optimizer/build/CMakeFiles/edit_cache.dir
-/home/leoconstproject/leo-routing-optimizer/build/CMakeFiles/rebuild_cache.dir

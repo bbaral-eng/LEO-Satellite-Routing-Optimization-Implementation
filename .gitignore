@@ -1,0 +1,30 @@
+# Build artifacts 
+build/
+_skbuild/
+*.so
+*.pyd
+
+# Python 
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+.eggs/
+
+# Virtual environments 
+.venv/
+venv/
+.venvLEOSatRouting/
+
+# Test & tooling caches 
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Generated simulation data 
+data/processed/*.h5
+
+# OS & editor noise 
+.DS_Store
+Thumbs.db
+.vscode/settings.json
