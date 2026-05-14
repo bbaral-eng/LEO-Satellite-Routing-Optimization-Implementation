@@ -3,7 +3,7 @@ import numpy as np
 import yaml 
 import h5py
 import os 
-
+import core_engine 
 
 class SnapshotEngine:
     def __init__(self, config_path="configs/constellation.yaml"):
@@ -28,6 +28,11 @@ class SnapshotEngine:
         self.MU         = 3.986e14
         self.R_ORBIT_KM = self.R_EARTH_KM + self.ALT_KM
         self.R_ORBIT_M  = self.R_ORBIT_KM * 1000.0
+
+        # coerce YAML values that lack a decimal point (parsed as strings by PyYAML 1.2)
+        self.isll["lambda"] = float(self.isll["lambda"])
+        self.isll["P_t"]    = float(self.isll["P_t"])
+        self.isll["a"]      = float(self.isll["a"])
 
         # linearized G_T and G_R
         self.G_T = 10 ** (self.isll["G_t"] / 10)
@@ -95,10 +100,10 @@ class SnapshotEngine:
         R_E_KM   = self.ops["earth_radius_km"]
         ATM_KM   = self.ops["atmosphere_margin_km"]
 
-        # sigma_mod = core_engine.calculate_beckmann_sigma(
-        #     self.pointing["mu_x"], self.pointing["sigma_x"],
-        #     self.pointing["mu_y"], self.pointing["sigma_y"]
-        # )
+        sigma_mod = core_engine.calculate_beckmann_sigma(
+            self.pointing["mu_x"], self.pointing["sigma_x"],
+            self.pointing["mu_y"], self.pointing["sigma_y"]
+        )
 
         for c in range(self.TIME_STEPS):
             for i in range(self.NUM_SATS):
@@ -114,24 +119,24 @@ class SnapshotEngine:
                     if dist_km > D_MAX_KM:
                         continue
 
-                    # earth occultation, checking if Earth blocks link 
-                    # blocked = core_engine.is_link_blocked(pos_i, pos_j, R_E_KM, ATM_KM)
-                    # if blocked:
-                    #     continue
+                    # earth occultation — must be checked before marking link active
+                    blocked = core_engine.is_link_blocked(pos_i, pos_j, R_E_KM, ATM_KM)
+                    if blocked:
+                        continue
 
                     A_tensor[c, i, j] = 1.0
                     D_tensor[c, i, j] = dist_km
 
                     dist_m = dist_km * 1000.0
 
-                    # B = core_engine.compute_B(
-                    #     self.isll["noise_variance"], self.isll["lambda"], dist_m,
-                    #     self.isll["R"], self.isll["P_t"], self.G_T, self.G_R,
-                    #     self.isll["N_t"], self.isll["N_r"]
-                    # )
-                    # B_tensor[c, i, j] = core_engine.compute_link_failure_probability(
-                    #     self.isll["a"], B, self.G_T, sigma_mod
-                    # )
+                    B = core_engine.compute_B(
+                        self.isll["noise_variance"], self.isll["lambda"], dist_m,
+                        self.isll["R"], self.isll["P_t"], self.G_T, self.G_R,
+                        self.isll["N_t"], self.isll["N_r"]
+                    )
+                    B_tensor[c, i, j] = core_engine.compute_link_failure_probability(
+                        self.isll["a"], B, self.G_T, sigma_mod
+                    )
 
         return A_tensor, B_tensor, D_tensor
 

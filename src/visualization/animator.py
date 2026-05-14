@@ -3,6 +3,7 @@ import numpy as np
 import h5py
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+import matplotlib.colors as mcolors
 from mpl_toolkits.mplot3d.art3d import Line3DCollection
 import os
 
@@ -42,16 +43,19 @@ def _plane_colors():
     return [cmap(i) for i in range(NUM_PLANES)]
 
 
-def _build_link_segments(pos_t, A_t, B_t):
+def _build_link_segments(pos_t, A_t, B_t, b_scale):
+    """Color links by failure probability relative to the global max in this dataset."""
     green, orange, red = [], [], []
+    lo = b_scale * 0.33
+    hi = b_scale * 0.67
     for i in range(NUM_SATS):
         for j in range(i + 1, NUM_SATS):
             if A_t[i, j] == 1.0:
                 seg = [pos_t[i], pos_t[j]]
                 b = B_t[i, j]
-                if b < 0.01:
+                if b < lo:
                     green.append(seg)
-                elif b <= 0.1:
+                elif b <= hi:
                     orange.append(seg)
                 else:
                     red.append(seg)
@@ -79,6 +83,7 @@ def _style_axes(ax, frame):
 def animate(positions, A, B):
     ex, ey, ez   = _earth_surface()
     plane_colors = _plane_colors()
+    b_scale      = B[B > 0].max()
 
     fig = plt.figure(figsize=(9, 8), facecolor="#0a0a1a")
     ax  = fig.add_subplot(111, projection="3d")
@@ -101,8 +106,8 @@ def animate(positions, A, B):
             ax.scatter(sat_xyz[:, 0], sat_xyz[:, 1], sat_xyz[:, 2],
                        color=plane_colors[p], s=20, depthshade=False, zorder=5)
 
-        # Inter-satellite links colored by failure probability
-        green, orange, red = _build_link_segments(pos_t, A[frame], B[frame])
+        # Inter-satellite links colored by failure probability (scaled to data range)
+        green, orange, red = _build_link_segments(pos_t, A[frame], B[frame], b_scale)
         for segs, col in [(green, "limegreen"), (orange, "orange"), (red, "red")]:
             if segs:
                 lc = Line3DCollection(segs, colors=col, linewidths=0.5, alpha=0.5)
@@ -124,16 +129,17 @@ def plot_adjacency_snapshots(A):
     fig, axes = plt.subplots(1, 3, figsize=(13, 4), facecolor="white")
     fig.suptitle("Adjacency Matrix — 3 Random Snapshots", fontsize=13)
 
-    for idx, (ax, t) in enumerate(zip(axes, timesteps)):
-        im = ax.imshow(A[t], cmap="inferno", vmin=0, vmax=1, aspect="auto")
+    binary_cmap = mcolors.ListedColormap(["white", "black"])
+
+    for col, (ax, t) in enumerate(zip(axes, timesteps)):
+        ax.imshow(A[t], cmap=binary_cmap, vmin=0, vmax=1, aspect="auto")
         ax.set_title(f"t = {t * 60} s", fontsize=10)
         ax.set_xlabel("Satellite j", fontsize=9)
-        if idx == 0:
+        if col == 0:
             ax.set_ylabel("Satellite i", fontsize=9)
         else:
             ax.set_yticks([])
 
-    fig.colorbar(im, ax=axes[-1], shrink=0.9, label="Link active")
     plt.tight_layout()
     os.makedirs(os.path.dirname(IMG_PATH), exist_ok=True)
     plt.savefig(IMG_PATH, dpi=150, bbox_inches="tight")

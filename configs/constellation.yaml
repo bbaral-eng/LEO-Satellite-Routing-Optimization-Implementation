@@ -11,7 +11,7 @@ Network_Size:
     f_inter_plane_phase: 1
 
 ISLL_Model_Parameters: 
-  P_t: 10e-3                # emitted luminous power, W
+  P_t: 50e-3                # emitted luminous power, W
   G_t: 106.3                # emitted antenna gain, dB
   G_r: 118.9                # received antenna gain, dB
   N_t: 0.5                  # transmitting antenna efficiency 
@@ -45,7 +45,7 @@ Operational_Constraints:
   o_i_max: 4                  # max out degree
   l_i_max: 4                  # max in degree   
   # ISLL communication range restriction.
-  d_max: 5000                 # maximum distance for ISLL communication, km
+  d_max: 6500                 # maximum distance for ISLL communication, km
 
 
 
