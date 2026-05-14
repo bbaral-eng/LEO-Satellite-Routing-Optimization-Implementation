@@ -7,7 +7,6 @@ find_package(Eigen3 REQUIRED NO_MODULE)
 
 pybind11_add_module(core_engine 
     src/core_engine/bindings.cpp
-    src/core_engine/src/pathfinding.cpp
     src/core_engine/src/beckmann_math.cpp
     src/core_engine/src/constraints.cpp
 )
