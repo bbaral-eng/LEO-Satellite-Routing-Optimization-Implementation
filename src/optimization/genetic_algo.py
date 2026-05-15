@@ -122,34 +122,6 @@ def improved_a_star(
 
     return path
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 def _build_H(individual: list, n_nodes: int) -> np.ndarray:
     """
     individual is a list of paths per task. So each individual carries up to n paths for task 1, task 2, ... task n. 
@@ -471,7 +443,6 @@ def GA_IAS(
         )
         population = [ind for ind, _ in combined[:population_size]]
 
-    
     final_fitnesses = [_evaluate(ind) for ind in population]
     final_best_idx = max(range(population_size), key=lambda i: final_fitnesses[i])
     if final_fitnesses[final_best_idx] > best_fitness:

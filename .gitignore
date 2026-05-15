@@ -23,8 +23,9 @@ venv/
 
 # Generated simulation data 
 data/processed/*.h5
+data/processed/results_*.json
 
 # OS & editor noise 
 .DS_Store
 Thumbs.db
-.vscode/settings.json
+.vscode/
