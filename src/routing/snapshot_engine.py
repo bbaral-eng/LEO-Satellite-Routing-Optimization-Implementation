@@ -140,35 +140,37 @@ class SnapshotEngine:
 
         return A_tensor, B_tensor, D_tensor
 
-    def generate_routing_tasks(self, num_tasks=20):
+    def generate_routing_tasks(self, num_tasks=20, seed=42):
         """
         Generate a list of routing tasks for the satellite network.
 
+        A per-snapshot seed is used so that tasks differ between snapshots,
+        reflecting changing communication demand as the constellation evolves.
+
         returns:
-            tasks: list of tuples (src, dst, priority) 
-            src = source satellite index (0 to NUM_SATS-1)
-            dst = destination satellite index (0 to NUM_SATS-1)
-            priority = random float between 0.1 and 1.0 indicating task priority (higher is more urgent, duh)
+            tasks: list of tuples (src, dst, priority)
+            src      = source satellite index 
+            dst      = destination satellite index 
+            priority = random float in [0.1, 1.0] (higher = more urgent)
         """
-        np.random.seed(42)          # for reproducbility, remove later 
+        rng   = np.random.default_rng(seed)
         tasks = []
 
         while len(tasks) < num_tasks:
-            src = np.random.randint(0, self.NUM_SATS)
-            dst = np.random.randint(0, self.NUM_SATS)
+            src = int(rng.integers(0, self.NUM_SATS))
+            dst = int(rng.integers(0, self.NUM_SATS))
 
-            if src == dst: 
-                continue 
+            if src == dst:
+                continue
 
-            priority = np.random.uniform(0.1, 1.0)
-            priority = round(priority, 2)
+            priority = round(float(rng.uniform(0.1, 1.0)), 2)
             tasks.append((src, dst, priority))
 
         return tasks
 
-    def save_snapshot(self, positions, A_tensor, B_tensor, D_tensor, tasks):
+    def save_snapshot(self, positions, A_tensor, B_tensor, D_tensor, tasks_per_snapshot):
         """
-        save computed snapshot to HDF5 file for later use. 
+        Save computed snapshot data to HDF5.
         """
         os.makedirs("data/processed", exist_ok=True)
         output_path = "data/processed/simulation_data.h5"
@@ -178,15 +180,19 @@ class SnapshotEngine:
             f.create_dataset("A_tensor", data=A_tensor)
             f.create_dataset("B_tensor", data=B_tensor)
             f.create_dataset("D_tensor", data=D_tensor)
-            f.create_dataset("tasks", data=np.array(tasks, dtype=np.float64))
+            f.create_dataset("tasks", data=np.array(tasks_per_snapshot, dtype=np.float64))
 
         print("data saved to:", output_path)
 
     def run(self):
         positions = self.compute_satellite_positions()
-        A, B, D = self.compute_tensors(positions)
-        tasks = self.generate_routing_tasks()
-        self.save_snapshot(positions, A, B, D, tasks)
+        A, B, D   = self.compute_tensors(positions)
+        # Generate a distinct task set for each snapshot 
+        tasks_per_snapshot = [
+            self.generate_routing_tasks(seed=42 + c)
+            for c in range(self.TIME_STEPS)
+        ]
+        self.save_snapshot(positions, A, B, D, tasks_per_snapshot)
 
 
 if __name__ == "__main__":

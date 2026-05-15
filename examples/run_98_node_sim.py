@@ -45,6 +45,7 @@ def run_snapshot(c, gm, tasks, H_prev, cfg, p_coefficients):
     neighbors, costs = gm.get_snapshot_graph(c)
     D_cost     = gm.D_tensor[c]
     B_snapshot = gm.B_tensor[c]
+    positions_c = gm.positions[c]   
 
     t0 = time.time()
     best_individual, H_opt, best_fitness = GA_IAS(
@@ -66,6 +67,7 @@ def run_snapshot(c, gm, tasks, H_prev, cfg, p_coefficients):
         alpha    = cfg["alpha"],
         beta     = cfg["beta"],
         epsilon  = cfg["epsilon"],
+        positions_c = positions_c,
     )
     elapsed = time.time() - t0
 
@@ -130,8 +132,7 @@ def main():
     gm  = GraphManager(H5_PATH, CONST_CFG)
     cfg = load_ga_config(GA_CFG_PATH)
 
-    tasks          = gm.tasks
-    # p1 scales f1 (O~10) to ~500; p2 moderates f2 (O~50); p3 shrinks f3 (O~180,000) to ~180
+    num_tasks      = gm.tasks.shape[1]
     p_coefficients = {"p1": 1, "p2": 1, "p3": 4.5e-5}
 
     if args.all:
@@ -145,7 +146,7 @@ def main():
         snap_label  = "0 only"
 
     print(
-        f"GA-AS | nodes={gm.num_nodes}  tasks={len(tasks)}  "
+        f"GA-AS | nodes={gm.num_nodes}  tasks={num_tasks}  "
         f"pop={cfg['population_size']}  gens={cfg['max_iterations']}  "
         f"snapshots={snap_label}"
     )
@@ -154,6 +155,7 @@ def main():
     all_results = []
 
     for c in snapshots:
+        tasks  = gm.tasks[c]     # per-snapshot task set
         result, H_prev = run_snapshot(c, gm, tasks, H_prev, cfg, p_coefficients)
         all_results.append(result)
 

@@ -365,6 +365,7 @@ def GA_IAS(
     alpha: float = 1.0,
     beta: float = 1.0,
     epsilon: float = 1e-6,
+    positions_c=None,
 ):
     """
     Algorithm 1: Improved Genetic Algorithm Based on A* (GA-AS).
@@ -403,13 +404,19 @@ def GA_IAS(
             graph_manager, weights, p_coefficients, M,
         )
 
+    if positions_c is not None:
+        diff = positions_c[:, np.newaxis, :] - positions_c[np.newaxis, :, :]
+        heuristic_dist = np.linalg.norm(diff, axis=2)  
+    else:
+        heuristic_dist = D_cost  
+
     # line 1: initialize population
     population = []
     for _ in range(population_size):
         individual = [
             improved_a_star(
                 int(t[0]), int(t[1]),
-                neighbors, costs, D_cost,
+                neighbors, costs, heuristic_dist,
                 alpha, beta, epsilon,
             )
             for t in tasks
@@ -446,10 +453,10 @@ def GA_IAS(
             p2 = _tournament_select(population, fitnesses)
             c1, c2 = _crossover(p1, p2, eta_c)
             offspring.append(
-                _mutate(c1, tasks, neighbors, costs, D_cost, eta_m, alpha, beta, epsilon)
+                _mutate(c1, tasks, neighbors, costs, heuristic_dist, eta_m, alpha, beta, epsilon)
             )
             offspring.append(
-                _mutate(c2, tasks, neighbors, costs, D_cost, eta_m, alpha, beta, epsilon)
+                _mutate(c2, tasks, neighbors, costs, heuristic_dist, eta_m, alpha, beta, epsilon)
             )
         offspring = offspring[:population_size]
 

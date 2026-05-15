@@ -56,11 +56,7 @@ class GraphManager:
 
         if H_prev.shape != H_curr.shape:
             raise ValueError(f"Shape mismatch: H_prev {H_prev.shape} vs H_curr {H_curr.shape}")
-        
-        if H_curr == 1 and H_prev == 0:
-            return 1
-        else:
-            return 0
+        return ((H_curr == 1) & (H_prev == 0)).astype(int)
 
     def check_degree_constraints(self, paths, n):
 
