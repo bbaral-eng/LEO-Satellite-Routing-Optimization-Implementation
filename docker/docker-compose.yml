@@ -1,0 +1,9 @@
+services:
+  leo-optimizer:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    volumes:
+      - ../data:/app/data
+      - ../assets:/app/assets
+

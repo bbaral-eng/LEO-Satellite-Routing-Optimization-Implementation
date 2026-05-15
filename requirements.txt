@@ -4,6 +4,7 @@ matplotlib
 h5py
 pyyaml
 networkx
+pillow
 
 # Build (C++ extension via scikit-build-core + pybind11)
 scikit-build-core>=0.5
