@@ -2,7 +2,7 @@
 
 An open-source implementation of **Zhao et al. (2022)** — *"A Routing Optimization Method for LEO Satellite Networks with Stochastic Link Failure"* ([Aerospace, 9, 322](https://doi.org/10.3390/aerospace9060322)).
 
-> **Note:** This is not original research. It is a faithful implementation of the paper above, built to educate and to show concretely how this type of system might look in practice.
+> **Note:** This is not original research. It is a faithful implementation of the paper above, built to educate and to show concretely how this type of system might look in practice. If you are the original authors and see some major flaws please let me know! I did this mainly for fun so I didn't do much crazy cross checking and debugs on it. Very interesting work! 
 
 ---
 
